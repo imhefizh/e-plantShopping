@@ -53,6 +53,7 @@ const CartItem = ({ onContinueShopping }) => {
     const total = item.cost.substr(1) * item.quantity;
     return total;
   };
+
   const calculateTotalPlant = () => {
     if (cart.length != 0) {
       const quantities = cart.map((item) => item.quantity);
@@ -60,6 +61,14 @@ const CartItem = ({ onContinueShopping }) => {
       return TotalPlant;
     } else {
       return "0";
+    }
+  };
+
+  const handleCheckoutShopping = () => {
+    if (cart.length != 0) {
+      alert("Functionality to be added for future reference, Thank You!");
+    } else {
+      alert("Take some plants into the cart please!");
     }
   };
 
@@ -118,7 +127,12 @@ const CartItem = ({ onContinueShopping }) => {
           Continue Shopping
         </button>
         <br />
-        <button className="get-started-button1">Checkout</button>
+        <button
+          className="get-started-button1"
+          onClick={handleCheckoutShopping}
+        >
+          Checkout
+        </button>
       </div>
     </div>
   );
