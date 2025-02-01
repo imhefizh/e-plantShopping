@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from "react";
 import "./ProductList.css";
 import CartItem from "./CartItem";
-import { useDispatch } from "react-redux";
-import { addItem } from "./CartSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem, toggleShowProduct, updateCartStatus } from "./CartSlice";
 
 function ProductList() {
   const [showCart, setShowCart] = useState(false);
   const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
   const dispatch = useDispatch();
+  const cart = useSelector((state) => state.cart.items);
+  const addedTo = useSelector((state) => state.cart.addedToCart);
 
   const plantsArray = [
     {
@@ -287,14 +289,14 @@ function ProductList() {
     setShowCart(false);
   };
 
-  const [addedToCart, setAddedToCart] = useState({});
-
   const handleAddToCart = (product) => {
     dispatch(addItem(product));
-    setAddedToCart((prevState) => ({
-      ...prevState,
-      [product.name]: true, // Set the product name as key and value as true to indicate it's added to cart
-    }));
+    dispatch(updateCartStatus(product));
+  };
+
+  const handleHome = (e) => {
+    e.preventDefault();
+    dispatch(toggleShowProduct());
   };
 
   return (
@@ -306,7 +308,11 @@ function ProductList() {
               src="https://cdn.pixabay.com/photo/2020/08/05/13/12/eco-5465432_1280.png"
               alt=""
             />
-            <a href="/" style={{ textDecoration: "none" }}>
+            <a
+              href="#"
+              onClick={(e) => handleHome(e)}
+              style={{ textDecoration: "none" }}
+            >
               <div>
                 <h3 style={{ color: "white" }}>Paradise Nursery</h3>
                 <i style={{ color: "white" }}>Where Green Meets Serenity</i>
@@ -316,15 +322,14 @@ function ProductList() {
         </div>
         <div style={styleObjUl}>
           <div>
-            {" "}
             <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>
               Plants
             </a>
           </div>
           <div>
-            {" "}
             <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}>
               <h1 className="cart">
+                <p className="number-of-item">{cart.length}</p>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 256 256"
@@ -355,20 +360,35 @@ function ProductList() {
           {plantsArray.map((part, index) => (
             <ul key={index} className="categories-container">
               <li className="category-container">
-                <h2>{part.category}</h2>
+                <h2 className="plant_heading">{part.category}</h2>
                 <ul className="product-list">
                   {part.plants.map((plant, index) => (
-                    <li key={index} className="product-card">
+                    <li
+                      key={index}
+                      className={
+                        !addedTo[plant.name]
+                          ? "product-card"
+                          : "product-card-added-to-cart"
+                      }
+                    >
                       <h3 className="product-title">{plant.name}</h3>
                       <img
                         className="product-image"
                         src={plant.image}
                         alt={plant.name}
-                        width={100}
                       />
                       <p>{plant.description}</p>
                       <p className="product-price">{plant.cost}</p>
-                      <button className="product-button">Add to Cart</button>
+                      <button
+                        className={
+                          !addedTo[plant.name]
+                            ? "product-button"
+                            : "product-button-added-to-cart"
+                        }
+                        onClick={() => handleAddToCart(plant)}
+                      >
+                        {!addedTo[plant.name] ? "Add to Cart" : "Added to Cart"}
+                      </button>
                     </li>
                   ))}
                 </ul>
